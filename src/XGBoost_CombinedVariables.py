@@ -53,6 +53,8 @@ df["temp_x_hour_sin"] = df["Temperature"] * df["hour_sin"]
 df["temp_x_hour_cos"] = df["Temperature"] * df["hour_cos"]
 df["forecast_x_hour_sin"] = df["forecast_demand"] * df["hour_sin"]
 df["forecast_x_hour_cos"] = df["forecast_demand"] * df["hour_cos"]
+df["forecast_24_hour_cos"] = df["24hrpreverrors"] * df["hour_cos"]
+df["forecast_24_hour_sin"] = df["24hrpreverrors"] * df["hour_sin"]
 
 features = [
     'Temperature', 'Humidity',
@@ -64,7 +66,9 @@ features = [
     '48hrpreverrors', '7daypreverrors', '14daypreverrors',
     'hour_x_temp', 'month_x_temp', 'hour_x_forecast', 'temp_x_forecast',
     'temp_x_hour_sin', 'temp_x_hour_cos',
-    'forecast_x_hour_sin', 'forecast_x_hour_cos'
+    'forecast_x_hour_sin', 'forecast_x_hour_cos',
+    'forecast_24_hour_cos', 'forecast_24_hour_sin'
+
 ]
 
 train_df = df[(df['date_time_future'] >= "2017-10-07 23:00:00") & (df['date_time_future'] <= "2020-03-05 23:00:00")]

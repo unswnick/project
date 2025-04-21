@@ -52,6 +52,8 @@ df["temp_x_hour_sin"] = df["Temperature"] * df["hour_sin"]
 df["temp_x_hour_cos"] = df["Temperature"] * df["hour_cos"]
 df["forecast_x_hour_sin"] = df["forecast_demand"] * df["hour_sin"]
 df["forecast_x_hour_cos"] = df["forecast_demand"] * df["hour_cos"]
+df["forecast_24_hour_cos"] = df["24hrpreverrors"] * df["hour_cos"]
+df["forecast_24_hour_sin"] = df["24hrpreverrors"] * df["hour_sin"]
 
 features = [
     'Temperature', 'Humidity',
@@ -63,6 +65,7 @@ features = [
     '48hrpreverrors', '7daypreverrors', '14daypreverrors',
     #'hour_x_temp', 'month_x_temp', 'hour_x_forecast', 'temp_x_forecast',
     'temp_x_hour_sin', 'temp_x_hour_cos',
+    #'forecast_24_hour_cos', 'forecast_24_hour_sin'
     #'forecast_x_hour_sin', 'forecast_x_hour_cos'
 ]
 
@@ -113,17 +116,38 @@ export_cols = ["date_time_future", "total_demand", "forecast_demand", "xgb_predi
 output_df[export_cols].to_csv("finalresultsxgboost.csv", index=False)
 
 
-# Explain model predictions using SHAP
-explainer = shap.Explainer(model, X_test)
-shap_values = explainer(X_test)
-shap_df = pd.DataFrame(shap_values.values, columns=X_test.columns)
+# Calculate absolute percentage error per row
+output_df["abs_pct_error"] = np.abs((output_df["total_demand"] - output_df["xgb_prediction"]) / output_df["total_demand"]) * 100
 
-# Forecast demand skews the plot so hide it
-filtered_shap_values = shap_df.drop(columns=["forecast_demand"])
-filtered_X_test = X_test.drop(columns=["forecast_demand"])
+# Extract hour from datetime
+output_df["Hour"] = pd.to_datetime(output_df["date_time_future"]).dt.hour
 
-shap.summary_plot(
-    filtered_shap_values.values,
-    features=filtered_X_test,
-    feature_names=filtered_X_test.columns
-)
+# Group by hour and calculate mean error
+hourly_error = output_df.groupby("Hour")["abs_pct_error"].mean().reset_index()
+
+# Plot
+plt.figure(figsize=(10, 5))
+plt.plot(hourly_error["Hour"], hourly_error["abs_pct_error"], marker='o')
+plt.title("MAPE by Hour of Day")
+plt.xlabel("Hour of Day")
+plt.ylabel("MAPE")
+plt.grid(True)
+plt.xticks(range(0, 24))
+plt.tight_layout()
+plt.show()
+
+
+# # Explain model predictions using SHAP
+# explainer = shap.Explainer(model, X_test)
+# shap_values = explainer(X_test)
+# shap_df = pd.DataFrame(shap_values.values, columns=X_test.columns)
+
+# # Forecast demand skews the plot so hide it
+# filtered_shap_values = shap_df.drop(columns=["forecast_demand"])
+# filtered_X_test = X_test.drop(columns=["forecast_demand"])
+
+# shap.summary_plot(
+#     filtered_shap_values.values,
+#     features=filtered_X_test,
+#     feature_names=filtered_X_test.columns
+# )

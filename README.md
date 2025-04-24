@@ -1,4 +1,4 @@
-# Welcome to ZZSC9020 GitHub repository for group Group D
+# Welcome to ZZSC9020 GitHub repository for Group D
 
 This GitHub repository is the main point of access for students and lecturers of the ZZSC9020 capstone course. 
 

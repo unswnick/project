@@ -3,7 +3,7 @@
 ## Group and project information
 
 ### Group members and zIDs
-- Katelyn Kemp 1 (z5459347) - Group leader
+- Katelyn Kemp (z5459347) - Group leader
 - David Valido Ramos (z5516338) - Researcher
 - Shanjay Perinpanathan (z5339723) - Researcher
 - Nick Mutton (z5549371) - Coder
